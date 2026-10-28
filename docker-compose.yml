@@ -1,0 +1,26 @@
+# نشر على سيرفر (VPS) مع HTTPS تلقائي عبر Caddy
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      - TRUST_PROXY=1
+      - COOKIE_SECURE=1
+      - DATA_DIR=/data
+    volumes:
+      - qmt-data:/data
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      - DOMAIN=${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on: [app]
+volumes:
+  qmt-data:
+  caddy-data:
+  caddy-config:
